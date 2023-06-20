@@ -1,3 +1,4 @@
+import re
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
@@ -5,6 +6,9 @@ from openpyxl.workbook import Workbook
 from openpyxl import load_workbook
 
 from typing import List, Dict, Tuple
+
+
+pattern = r'^\d+(\.\d+)?:\d+(\.\d+)?$'
 
 
 def get_winners(players: List[Dict], is_football=False):
@@ -64,9 +68,11 @@ def get_places_n_to_start(sorted_list: List[Dict], starting_point) -> Dict:
 
 def handle_scores(worksheet, contestant, row):
     for result in worksheet[row]:
-        if result.value and len(result.value) == 3:
-            first_num = int(result.value[0])
-            second_num = int(result.value[2])
+        if result.value and re.match(pattern, result.value):
+            print(f"result.value_len = {len(result.value)}, value = {result.value}")
+            result_lst = result.value.split(":")
+            first_num = float(result_lst[0])
+            second_num = float(result_lst[1])
             contestant["game_wins"] += first_num
             if first_num > second_num:
                 contestant["match_wins"] += 1
@@ -168,7 +174,7 @@ class Calculator:
         sorted_conts = sorted(conts, key=lambda x: x["score"], reverse=True)
 
         for player in sorted_conts:
-            tuuple = (conts.index(player) + 1, player.get("name"), player.get("score"), player.get("match_wins"),
+            tuuple = (sorted_conts.index(player) + 1, player.get("name"), player.get("score"), player.get("match_wins"),
                       player.get("game_wins"), player.get("draw/ничья"), player.get("loose"))
             to_return.append(tuuple)
         return to_return
