@@ -69,7 +69,6 @@ def get_places_n_to_start(sorted_list: List[Dict], starting_point) -> Dict:
 def handle_scores(worksheet, contestant, row):
     for result in worksheet[row]:
         if result.value and re.match(pattern, result.value):
-            print(f"result.value_len = {len(result.value)}, value = {result.value}")
             result_lst = result.value.split(":")
             first_num = float(result_lst[0])
             second_num = float(result_lst[1])
@@ -105,7 +104,7 @@ def handling_tournament(workbook, tournament_var, tournament_name):
                 for team in ws["C"]:
                     if team.value:
                         if element.value[-2] == team.value[-1]:
-                            row = int(team.coordinate[-1])
+                            row = int(team.coordinate[1:])
                             contestant = handle_scores(worksheet=ws, contestant=contestant, row=row)
             elif tournament_name != "Футбол":
                 row = int(element.coordinate[1:])
